@@ -1,12 +1,11 @@
 /* eslint-disable no-unused-vars */
 /* eslint-disable react/prop-types */
-import axios from "axios";
 import { useEffect, useState } from "react";
 import Modal from "react-modal";
 Modal.setAppElement("#root");
 import { BiBarcodeReader } from "react-icons/bi";
 import Swal from "sweetalert2";
-import { config } from "../../../config";
+import instance from "../../services/axios";
 
 function EditProduct({
   isEditModalOpen,
@@ -70,12 +69,11 @@ function EditProduct({
       formDataUpload.append("image", formData.file);
       formDataUpload.append("_id", _id);
 
-      const API_KEY = import.meta.env.VITE_POSYAYEE_API_KEY;
       console.log(formData);
       //เชื่อม API และเอาค่าในฟอร์มใส่ไปในบอดี้
-      const response = await axios.post(
-        `${API_KEY}/edit-product`,
-        formDataUpload,config
+      const response = await instance.post(
+        `/edit-product`,
+        formDataUpload
       );
 
       //ถ้าสเตัสจาก server ปกติ

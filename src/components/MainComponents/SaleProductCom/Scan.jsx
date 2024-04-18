@@ -8,11 +8,10 @@ import Modal from "react-modal";
 import CancelOrder from "../../PopupComponents/CancelOrder";
 import ConfirmPayOrder from "../../PopupComponents/ConfirmPayOrder";
 import Swal from "sweetalert2";
-import axios from "axios";
 import paySound from "../../../assets/Sounds/cash-register-purchase-87313.mp3";
 import "../../../assets/css/LoadingWhilePayMoney.css";
 import LoadingWhilePayMoney from "../../LoaddingComponents/LoadingWhilePayMoney";
-import { config } from "../../../../config";
+import instance from "../../../services/axios";
 
 Modal.setAppElement("#root");
 
@@ -84,8 +83,6 @@ function Scan({ cart, setCart }) {
     SetComfirmModalOpen(false);
   };
 
-  const API_KEY = import.meta.env.VITE_POSYAYEE_API_KEY;
-  
   //จ่ายด้วยเงินสดปกติ
   const confirmPayOrder = async () => {
     setLoadingWhilePayMoney(true);
@@ -96,12 +93,14 @@ function Scan({ cart, setCart }) {
           quantity: item.quantity,
         })),
       };
-      const response = await axios.post(`${API_KEY}/sale`, formData,config);
-      Swal.fire({
-        icon: "success",
-        title: response.data.message,
-        timer: 3000,
-      });
+      const response = await instance.post(`/sale`, formData);
+      if (response.status === 200) {
+        Swal.fire({
+          icon: "success",
+          title: response.data.message,
+          timer: 3000,
+        });
+      }
 
       setCart([]);
       closeConfirmModal();
@@ -139,12 +138,15 @@ function Scan({ cart, setCart }) {
           quantity: item.quantity,
         })),
       };
-      const response = await axios.post(`${API_KEY}/sale-credit`, formData,config);
-      Swal.fire({
-        icon: "success",
-        title: response.data.message,
-        timer: 3000,
-      });
+      const response = await instance.post(`/sale-credit`, formData);
+      
+      if(response.status === 200) {
+        Swal.fire({
+          icon: "success",
+          title: response.data.message,
+          timer: 3000,
+        });
+      }
 
       setCart([]);
       closeConfirmModal();
@@ -171,7 +173,6 @@ function Scan({ cart, setCart }) {
       }
     }
   };
-
 
   return (
     <div className=" h-full w-[40%] flex justify-center relative bg-white">

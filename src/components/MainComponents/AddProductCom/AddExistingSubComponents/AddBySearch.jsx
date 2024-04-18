@@ -5,9 +5,8 @@ import Modal from "react-modal";
 Modal.setAppElement("#root");
 import { ImPriceTags } from "react-icons/im";
 import { BsBoxSeam } from "react-icons/bs";
-import axios from "axios";
 import Swal from "sweetalert2";
-import { config } from "../../../../../config";
+import instance from "../../../../services/axios";
 
 
 // eslint-disable-next-line react/prop-types
@@ -64,7 +63,6 @@ function AddBySearch({ productsNobarcode }) {
   };
 
   const saveAddProductQuantity = async () => {
-    const API_KEY = import.meta.env.VITE_POSYAYEE_API_KEY;
     const formData = {
       products:[{
         _id:productsSearch[0]._id,
@@ -73,7 +71,7 @@ function AddBySearch({ productsNobarcode }) {
     };
     try
     {
-      const response = await axios.post(`${API_KEY}/add-product-quantity`, formData,config);
+      const response = await instance.post(`/add-product-quantity`, formData);
       Swal.fire({
         icon: "success",
         title: response.data.message,
@@ -81,8 +79,6 @@ function AddBySearch({ productsNobarcode }) {
       });
     }
     catch(err){
-      // การจัดการข้อผิดพลาดในการโทรองข้อมูลไปยังเซิร์ฟเวอร์
-      console.log(err);
       if (err.response) {
         // กรณีเซิร์ฟเวอร์ส่งข้อมูลผิด
         Swal.fire({
