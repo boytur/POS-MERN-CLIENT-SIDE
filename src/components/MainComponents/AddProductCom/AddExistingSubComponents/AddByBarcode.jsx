@@ -1,9 +1,9 @@
 /* eslint-disable react/prop-types */
 import { BiBarcodeReader } from "react-icons/bi";
 import { useState } from "react";
-import axios from "axios";
 import Swal from "sweetalert2";
 import { config } from "../../../../../config";
+import instance from "../../../../services/axios";
 
 // eslint-disable-next-line no-unused-vars
 function AddByBarcode({ products, fetchProducts }) {
@@ -42,7 +42,6 @@ function AddByBarcode({ products, fetchProducts }) {
   };
 
   const saveAddProductQuantity = async () => {
-    const API_KEY = import.meta.env.VITE_POSYAYEE_API_KEY;
     try {
       const formData = {
         products: scanProduct.map((item) => ({
@@ -50,8 +49,8 @@ function AddByBarcode({ products, fetchProducts }) {
           quantity: item.quantity,
         })),
       };
-      const response = await axios.post(
-        `${API_KEY}/add-product-quantity`,
+      const response = await instance.post(
+        `/add-product-quantity`,
         formData,config
       );
       Swal.fire({

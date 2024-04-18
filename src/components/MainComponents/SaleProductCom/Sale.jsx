@@ -26,8 +26,7 @@ import { RiAddCircleFill } from "react-icons/ri";
 import useBarcodeScanner from "../../../services/useBarcodeScanner";
 import productNotFoundSound from "../../../assets/Sounds/Productnotfound.mp3";
 import beepSound from "../../../assets/Sounds/Barcode-scanner-beep-sound.mp3";
-import { config } from "../../../../config";
-import axios from "axios";
+import instance from "../../../services/axios";
 
 function Sale() {
   const [products, setProducts] = useState([]); //รอเก็บข้อมูลเข้า Array products
@@ -55,11 +54,10 @@ function Sale() {
       setCart([...cart, { ...product, quantity: 1 }]);
     }
   }
-  const API_KEY = import.meta.env.VITE_POSYAYEE_API_KEY;
   // Fetch API สินค้าทั้งหมด
   const fetchProducts = () => {
-    axios
-      .get(`${API_KEY}/view-product`, config)
+    instance
+      .get(`/view-product`)
       .then((response) => response.data)
       .then((data) => {
         setProducts(data.products);

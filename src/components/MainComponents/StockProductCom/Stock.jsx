@@ -22,6 +22,7 @@ import { useState } from "react";
 import OutStockProducts from "./OutStockProducts";
 import AllProducts from "./AllProducts";
 import { config } from "../../../../config";
+import instance from "../../../services/axios";
 
 function Stock() {
   const [stockProducts, setProducts] = useState([]); //เพื่อดึง Products มาใช้
@@ -33,29 +34,28 @@ function Stock() {
   }
 
   /**** Fecth API สินค้าทั้งหมดในคลัง ***************
-   *หลังจากนั้น filter เอาสินค้าใกล้จะหมดและส่งเป็น 
+   *หลังจากนั้น filter เอาสินค้าใกล้จะหมดและส่งเป็น
    *prob => outStockProducts , allProducts
    ********************************************/
-   const API_KEY = import.meta.env.VITE_POSYAYEE_API_KEY;
-   const fetchProducts = async () => {
-     try {
-       const response = await fetch(`${API_KEY}/view-product`,config);
-       const data = await response.json();
-       setProducts(data.products);
-       const filterProducts = data.products.filter((product) => {
-         return product.volume !== null && product.volume < 5;
-       });
-       setOutStockProducts(filterProducts);
-       setLoading(false);
-     } catch (error) {
-       console.error("Error fetching data:", error);
-       setLoading(false);
-     }
-   };
+  const fetchProducts = async () => {
+    try {
+      const response = await instance.get(`/view-product`, config);
+      const data = await response.data;
+      setProducts(data.products);
+      const filterProducts = data.products.filter((product) => {
+        return product.volume !== null && product.volume < 5;
+      });
+      setOutStockProducts(filterProducts);
+      setLoading(false);
+    } catch (error) {
+      console.error("Error fetching data:", error);
+      setLoading(false);
+    }
+  };
 
-   useEffect(() => {
+  useEffect(() => {
     fetchProducts();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   return (
     <div>

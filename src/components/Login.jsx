@@ -2,64 +2,29 @@
 import { useEffect, useState } from "react";
 import "../assets/css/Login.css";
 import { BsShop } from "react-icons/bs";
-import axios from "axios";
-import { auth } from "../services/Authorize";
 import { useNavigate } from "react-router-dom";
-import Swal from "sweetalert2"; // import SweetAlert2
+import { useAuth } from "../contexts/AuthProvider";
 
 function Login({ isAuthenticated, setIsAuthenticated }) {
   const navigate = useNavigate();
+  const { login } = useAuth();
+
+
   // กำหนด state สำหรับ username และ password
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
-  const [error, setError] = useState(""); // เพิ่ม state สำหรับเก็บข้อผิดพลาด
+
+  const [payLoad, setPayLoad] = useState({
+    username: "",
+    password: "",
+  });
+
   const [loading, setLoading] = useState(true); // เพิ่ม state สำหรับตรวจสอบว่ากำลังโหลดข้อมูลหรือไม่
 
-  // ฟังก์ชันเมื่อผู้ใช้เปลี่ยนค่า username
-  const handleUsernameChange = (event) => {
-    setUsername(event.target.value);
-  };
-
-  // ฟังก์ชันเมื่อผู้ใช้เปลี่ยนค่า password
-  const handlePasswordChange = (event) => {
-    setPassword(event.target.value);
-  };
-
   // ฟังก์ชันเมื่อผู้ใช้กดปุ่มเข้าสู่ระบบ
-  const API_KEY = import.meta.env.VITE_POSYAYEE_API_KEY;
-  const handleLogin = () => {
-    if (username.length !== 0) {
-      axios
-        .post(`${API_KEY}/login`, { username, password })
-        .then((response) => {
-          // ตั้งค่า isAuthenticated เป็น true
-          setIsAuthenticated(true);
-          localStorage.setItem('token',response.data.token);
-          auth(response, navigate("/sale-products"));
-          window.location.reload(false);
-        })
-        .catch((err) => {
-          if (err.response && err.response.data && err.response.data.error) {
-            setError(err.response.data.error);
-            Swal.fire({
-              icon: "error",
-              title: "เกิดข้อผิดพลาดในเข้าสู่ระบบ",
-              text: error,
-            });
-          } else {
-            setError("เข้าสู่ระบบไม่สำเร็จ");
-          }
-        });
+  const handleLogin = async() => {
+    if (payLoad.username.length !== 0) {
+      await login(payLoad);
     }
   };
-
-  //const [status, setStatus] = useState("");
-  // const fetchServerStatus = () => {
-  //   fetch(`${API_KEY}`)
-  //   .then((response)=>response)
-  //   .then((data) => setStatus(data))
-  //   .catch((err)=>console.log(err));
-  // };
 
   useEffect(() => {
     // ตรวจสอบว่ามีข้อมูล username และ token ใน sessionStorage หรือไม่
@@ -75,7 +40,7 @@ function Login({ isAuthenticated, setIsAuthenticated }) {
 
     setLoading(false); // แสดงว่าข้อมูลได้รับการโหลดแล้ว
     // fetchServerStatus();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [setIsAuthenticated]); // ให้ useEffect ทำงานเมื่อคอมโพเนนต์นี้ถูกโหลดครั้งแรก
 
   // ถ้ากำลังโหลดข้อมูล ให้แสดง "กำลังโหลด..."
@@ -87,7 +52,7 @@ function Login({ isAuthenticated, setIsAuthenticated }) {
   if (isAuthenticated) {
     return navigate("/sale-products");
   }
-  
+
   return (
     <div className="login-background">
       <div className="w-[380px] h-[514px] bg-white rounded-md flex-col z-50">
@@ -113,8 +78,8 @@ function Login({ isAuthenticated, setIsAuthenticated }) {
             id="username"
             type="text"
             placeholder="sangjun@posyayee"
-            value={username}
-            onChange={handleUsernameChange}
+            onChange={(e) => setPayLoad({ ...payLoad, username: e.target.value })}
+
           />
         </div>
         <div className="w-full px-6 mb-6">
@@ -129,8 +94,8 @@ function Login({ isAuthenticated, setIsAuthenticated }) {
             id="password"
             type="password"
             placeholder="******************"
-            value={password}
-            onChange={handlePasswordChange}
+            onChange={(e) => setPayLoad({ ...payLoad, password: e.target.value })}
+
           />
         </div>
         <div className="w-full px-6 mb-6 mt-[33px]">
@@ -151,9 +116,6 @@ function Login({ isAuthenticated, setIsAuthenticated }) {
               Facebook
             </a>
           </div>
-          {/* <div className=" mt-5">
-              <p className=" text-gray-700 text-sm">Server status : {status != "" ? "🟢Online":"⚪Offline" }</p>
-          </div> */}
         </div>
       </div>
     </div>

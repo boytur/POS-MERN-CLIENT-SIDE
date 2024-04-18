@@ -3,8 +3,8 @@ import { useEffect, useState } from "react";
 import "../../../assets/css/Login.css";
 import AddByBarcode from "./AddExistingSubComponents/AddByBarcode";
 import AddBySearch from "./AddExistingSubComponents/AddBySearch";
-import { config } from "../../../../config";
-import axios from "axios";
+import instance from "../../../services/axios";
+
 
 function AddExistingProduct() {
   const [products, setProducts] = useState([]);
@@ -17,17 +17,13 @@ function AddExistingProduct() {
   */
 
   const fetchProducts = async () => {
-    const API_KEY = import.meta.env.VITE_POSYAYEE_API_KEY;
     try {
-      const response = await axios.get(`${API_KEY}/view-product`, config);
+      const response = await instance.get(`/view-product`);
       const data = response.data;
 
-      const filteredProducts = data.products.filter(
-        (product) => product.barcode === "" && product.volume !== null
-      );
 
       setProducts(data.products);
-      setProductsNobarcode(filteredProducts);
+      setProductsNobarcode(data.products);
     } catch (error) {
       console.error("Error fetching data:", error);
     }

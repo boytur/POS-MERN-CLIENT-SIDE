@@ -11,8 +11,7 @@
 import Modal from "react-modal";
 Modal.setAppElement("#root");
 import Swal from "sweetalert2";
-import { config } from "../../../config";
-import axios from "axios";
+import instance from "../../services/axios";
 
 function DeleteProduct({
   isDelelteModalOpen,
@@ -21,11 +20,11 @@ function DeleteProduct({
   _id,
   fetchProducts
 }) {
-  const API_KEY = import.meta.env.VITE_POSYAYEE_API_KEY;
+
 
   const handleDelete = async () => {
     try {
-      const response = await axios.delete(`${API_KEY}/delete-product/${_id}`, config);
+      const response = await instance.delete(`/delete-product/${_id}`);
       const data = response.data;
         
       // Alert when deleting a product

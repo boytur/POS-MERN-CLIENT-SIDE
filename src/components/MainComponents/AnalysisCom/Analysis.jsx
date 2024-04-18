@@ -12,26 +12,22 @@ import {
   FcSalesPerformance,
   FcSurvey,
 } from "react-icons/fc";
-import { config } from "../../../../config";
+import instance from "../../../services/axios";
 
 function Analysis() {
   const [salesData, setSalesData] = useState({});
-  const API_KEY = import.meta.env.VITE_POSYAYEE_API_KEY;
   useEffect(() => {
-    fetch(`${API_KEY}/view-dailysale`,config)
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error("Network response was not ok");
+    const fetchData = async () => {
+      try {
+        const response = await instance.get(`/view-dailysale`);
+        if (response.status === 200) {
+          setSalesData(response.data); // Assuming your API returns the sales data
         }
-        return response.json();
-      })
-      .then((data) => {
-        setSalesData(data);
-      })
-      .catch((error) => {
-        console.log(error);
-      });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    };
+    fetchData();
   }, []);
 
   let [color, setColor] = useState("");
@@ -125,10 +121,7 @@ function Analysis() {
       {
         label: "สัดส่วนเงินสดกับเครดิต",
         data: [salesData.day1, salesData.creditSale],
-        backgroundColor: [
-          "rgb(75, 192, 192)",
-          "rgb(255, 99, 132)"
-        ],
+        backgroundColor: ["rgb(75, 192, 192)", "rgb(255, 99, 132)"],
       },
     ],
   };
@@ -139,9 +132,9 @@ function Analysis() {
   let allSaleToday = parseInt(salesData.day1 + salesData.creditSale);
   return (
     <div>
-      <div className="flex">
+      <div className="flex ">
         <Aside />
-        <div className="w-full flex flex-col pl-4 pt-2">
+        <div className="w-full flex flex-col pl-4 pt-2 bg-white">
           <div className="w-full font-semibold items-center flex  mt-2">
             <div>
               <h1 className=" text-[#4C49ED] text-[32px]">วิเคราะห์ยอดขาย</h1>
@@ -265,7 +258,7 @@ function Analysis() {
               </div>
             </div>
             <div className="w-[20rem] flex justify-center">
-              <PolarArea data={dataCashWithCredit}/>
+              <PolarArea data={dataCashWithCredit} />
             </div>
           </div>
           <div className="flex">
